@@ -24,15 +24,13 @@ exports.syncCart = async (req, res) => {
                 : product.price.regular;
 
             return {
-                productId: item.id,
+         
                 title: item.title,
                 image: item.image,
                 qty: item.qty,
                 price_regular: product.price.regular,
                 price_sale: product.price.sale,
-                valid_price: finalPrice,
-                isValid: true,
-                error: null
+
             };
         }));
 
