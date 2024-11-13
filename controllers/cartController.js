@@ -25,14 +25,14 @@ exports.syncCart = async (req, res) => {
 
             return {
                 productId: item.id,
+                id: item.id,
                 title: item.title,
                 image: item.image,
                 qty: item.qty,
                 price_regular: product.price.regular,
                 price_sale: product.price.sale,
                 valid_price: finalPrice,
-                isValid: true,
-                error: null
+                isValid: true
             };
         }));
 

@@ -5,6 +5,7 @@ const CartSchema = new mongoose.Schema({
     domain: { type: String, required: true }, 
     items: [{
         productId: { type: String, required: true },
+        id:{ type: String, required: true },
         title: { type: String, required: true },
         image: { type: String, required: true },
         qty: { type: Number, required: true },  
