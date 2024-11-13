@@ -11,6 +11,7 @@ exports.syncCart = async (req, res) => {
         const domain = req.headers['domain']; 
         const sessionIdh = req.headers['sessionid']; 
 
+        // Validar los productos del carrito
         const validItems = await Promise.all(items_cart.map(async item => {
             const product = await Products.findOne({ _id: item.id, domain: domain });
 
@@ -43,8 +44,10 @@ exports.syncCart = async (req, res) => {
 
         const calculatedCantItems = validItems.reduce((acc, item) => acc + item.qty, 0);
 
+        // Generar o recuperar el sessionId
         const sessionId = sessionIdh || jwt.sign({ sessionId: new mongoose.Types.ObjectId().toString() }, process.env.SESSION_SECRET, { expiresIn: '2h' });
         
+        // Buscar o crear el carrito
         let cart = await Cart.findOne({ sessionId, domain: domain });
         if (!cart) {
             cart = new Cart({
@@ -63,7 +66,17 @@ exports.syncCart = async (req, res) => {
         }
 
         await cart.save();
-        res.status(200).json({ message: 'Carrito sincronizado exitosamente', cart });
+
+        // Responder con la estructura solicitada
+        res.status(200).json({
+            status: true,
+            cart: {
+                items_cart: validItems,
+                total: calculatedTotal,
+                currency: currency,
+                cantItems: calculatedCantItems
+            }
+        });
     } catch (error) {
         res.status(500).json({ message: 'Error al sincronizar el carrito', error: error.message });
     }
