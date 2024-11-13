@@ -72,7 +72,7 @@ exports.syncCart = async (req, res) => {
             status: true,
             cart: {
                 items_cart: validItems,
-                total: calculatedTotal,
+                Total: calculatedTotal,
                 currency: currency,
                 cantItems: calculatedCantItems
             }
