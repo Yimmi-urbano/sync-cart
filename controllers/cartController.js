@@ -70,6 +70,7 @@ exports.syncCart = async (req, res) => {
         // Responder con la estructura solicitada
         res.status(200).json({
             status: true,
+            sessionId,
             cart: {
                 items_cart: validItems,
                 Total: calculatedTotal,
