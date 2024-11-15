@@ -11,7 +11,6 @@ exports.syncCart = async (req, res) => {
         const domain = req.headers['domain']; 
         const sessionIdh = req.headers['sessionid']; 
 
-        // Validar los productos del carrito
         const validItems = await Promise.all(items_cart.map(async item => {
             const product = await Products.findOne({ _id: item.id, domain: domain });
 
@@ -44,10 +43,8 @@ exports.syncCart = async (req, res) => {
 
         const calculatedCantItems = validItems.reduce((acc, item) => acc + item.qty, 0);
 
-        // Generar o recuperar el sessionId
         const sessionId = sessionIdh || jwt.sign({ sessionId: new mongoose.Types.ObjectId().toString() }, process.env.SESSION_SECRET, { expiresIn: '2h' });
-        
-        // Buscar o crear el carrito
+
         let cart = await Cart.findOne({ sessionId, domain: domain });
         if (!cart) {
             cart = new Cart({
@@ -67,7 +64,6 @@ exports.syncCart = async (req, res) => {
 
         await cart.save();
 
-        // Responder con la estructura solicitada
         res.status(200).json({
             status: true,
             sessionId,
@@ -80,5 +76,26 @@ exports.syncCart = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ message: 'Error al sincronizar el carrito', error: error.message });
+    }
+};
+
+exports.deleteCart = async (req, res) => {
+    try {
+        const domain = req.headers['domain'];
+        const sessionIdh = req.headers['sessionid'];
+
+        if (!domain || !sessionIdh) {
+            return res.status(400).json({ message: 'Dominio o sesión no proporcionados' });
+        }
+
+        const cart = await Cart.findOneAndDelete({ sessionId: sessionIdh, domain: domain });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Carrito no encontrado para esta sesión y dominio' });
+        }
+
+        res.status(200).json({ status: true, message: 'Carrito eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el carrito', error: error.message });
     }
 };
