@@ -31,6 +31,7 @@ exports.syncCart = async (req, res) => {
                 price_regular: product.price.regular,
                 price_sale: product.price.sale,
                 valid_price: finalPrice,
+                slug:item.slug,
                 isValid: true
             };
         }));
